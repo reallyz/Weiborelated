@@ -20,14 +20,14 @@ def getdata(targetid,targetname,sincetime):
     getid=0
     is_top=0
     weiboinfo=[]
-    #时间戳的判断
+    #时间戳的判断,since_id,每次修改微博的内容，时间戳都会改变
     jsons=html.json()
     since_id=jsons['data']['cardlistInfo']['since_id']
     try:
         is_top=jsons['data']['cards'][0]['mblog']['isTop']
     except:
         print('NO pinned weibo')
-    if since_id==sincetime:
+    if str(since_id)==str(sincetime):
         flag=0
     else:
         #有无置顶微博
