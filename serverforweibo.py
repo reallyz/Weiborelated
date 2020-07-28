@@ -21,29 +21,31 @@ def getdata(targetid,targetname,sincetime):
     is_top=0
     weiboinfo=[]
     #时间戳的判断,since_id,每次修改微博的内容，时间戳都会改变
+    #这里要修正一下，since_id是用来分页的，也就是说没有产生新的页数，since_id不会改变
+    #新策略是用mblog里面的id来判断是否值最新的微博
     jsons=html.json()
-    since_id=jsons['data']['cardlistInfo']['since_id']
+    #since_id=jsons['data']['cardlistInfo']['since_id']
     try:
         is_top=jsons['data']['cards'][0]['mblog']['isTop']
     except:
         print('NO pinned weibo')
-    if str(since_id)==str(sincetime):
+    if is_top:
+        getid = 1
+    # 如果是转发，获取转发的内容
+    newest = jsons['data']['cards'][getid]
+    text = newest['mblog']['text']
+    # print(text)
+    weiboinfo.append(text)
+    try:
+        if newest['mblog']['retweeted_status']:
+            weiboinfo.append(newest['mblog']['retweeted_status']['text'])
+    except:
+        pass
+    #时间的获取：
+    lastime=jsons['data']['cards'][getid]['mblog']['id']
+    if str(lastime)==str(sincetime):
         flag=0
-    else:
-        #有无置顶微博
-        if is_top:
-           getid=1
-        #如果是转发，获取转发的内容
-        newest=jsons['data']['cards'][getid]
-        text=newest['mblog']['text']
-        #print(text)
-        weiboinfo.append(text)
-        try:
-            if newest['mblog']['retweeted_status']:
-                weiboinfo.append(newest['mblog']['retweeted_status']['text'])
-        except:
-            pass
-    return flag,targetname,weiboinfo,since_id
+    return flag,targetname,weiboinfo,lastime
 def update_target_config(date):
     filepath = os.path.split(os.path.realpath(__file__))[0] + os.sep + 'target.txt'
     with open(filepath, 'rb') as f:
