@@ -55,6 +55,8 @@ def update_target_config(date):
         output=[]
         for line,newestime in zip(lines,date):
             line[2]=str(newestime)
+            #这里有一个值得注意的地方是：updatinfo的type是string,不可变类型
+            #所以可以这样append
             updatinfo=' '.join(line)
             output.append(updatinfo)
     with open(filepath,'w',encoding='utf-8') as f:
